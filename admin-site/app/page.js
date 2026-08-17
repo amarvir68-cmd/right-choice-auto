@@ -33,14 +33,83 @@ function Analytics({supabase}){
 }
 function Inventory({supabase,setNotice}){const[items,setItems]=useState([]);const[edit,setEdit]=useState(null);async function load(){const{data,error}=await supabase.from('vehicles').select('*,vehicle_images(*)').order('created_at',{ascending:false});if(error)setNotice(error.message);else setItems(data||[])}useEffect(()=>{load()},[]);async function remove(id){if(!confirm('Delete this vehicle?'))return;const{error}=await supabase.from('vehicles').delete().eq('id',id);if(error)setNotice(error.message);else{setNotice('Vehicle deleted.');load()}}if(edit)return <VehicleForm supabase={supabase} initial={edit} onDone={()=>{setEdit(null);load();setNotice('Vehicle updated.')}}/>;return <section><div className="titleRow"><div><h1>Inventory</h1><p>Only published + available vehicles appear on the public site.</p></div></div><div className="table">{items.map(v=><div className="row" key={v.id}><div><strong>{v.year} {v.make} {v.model}</strong><small>{v.status} • {v.published?'Published':'Draft'} • {v.mileage?`${Number(v.mileage).toLocaleString()} km`:''}</small></div><div className="rowActions"><button className="secondary" onClick={()=>setEdit(v)}>Edit</button><button className="danger" onClick={()=>remove(v.id)}>Delete</button></div></div>)}{!items.length&&<p>No vehicles yet.</p>}</div></section>}
 function VehicleForm({supabase,initial,onDone}){
- const[v,setV]=useState(initial||blankVehicle);const[files,setFiles]=useState([]);const[images,setImages]=useState([...(initial?.vehicle_images||[])].sort((a,b)=>a.sort_order-b.sort_order));const[saving,setSaving]=useState(false);
+ const[v,setV]=useState(initial||blankVehicle);
+ const[files,setFiles]=useState([]);
+ const[images,setImages]=useState([...(initial?.vehicle_images||[])].sort((a,b)=>a.sort_order-b.sort_order));
+ const[saving,setSaving]=useState(false);
+
  function change(e){const{name,value,type,checked}=e.target;setV(x=>({...x,[name]:type==='checkbox'?checked:value}))}
+ function addFiles(list){
+   const valid=[...list].filter(f=>['image/jpeg','image/png','image/webp'].includes(f.type)&&f.size<=8*1024*1024);
+   setFiles(prev=>[...prev,...valid]);
+ }
+ function moveNew(index,dir){const target=index+dir;if(target<0||target>=files.length)return;const next=[...files];[next[index],next[target]]=[next[target],next[index]];setFiles(next)}
+ function removeNew(index){setFiles(files.filter((_,i)=>i!==index))}
+ function newCover(index){if(index===0)return;setFiles([files[index],...files.filter((_,i)=>i!==index)])}
  async function persistOrder(next){setImages(next);await Promise.all(next.map((x,i)=>supabase.from('vehicle_images').update({sort_order:i}).eq('id',x.id)))}
  async function moveImage(index,dir){const target=index+dir;if(target<0||target>=images.length)return;const next=[...images];[next[index],next[target]]=[next[target],next[index]];await persistOrder(next)}
  async function setCover(index){if(index===0)return;const next=[images[index],...images.filter((_,i)=>i!==index)];await persistOrder(next)}
  async function deleteImage(img){if(!confirm('Delete this photo permanently?'))return;const{error:storageError}=await supabase.storage.from('vehicle-images').remove([img.storage_path]);if(storageError){alert(storageError.message);return}const{error}=await supabase.from('vehicle_images').delete().eq('id',img.id);if(error){alert(error.message);return}await persistOrder(images.filter(x=>x.id!==img.id))}
- async function save(e){e.preventDefault();setSaving(true);const payload={...v,year:Number(v.year),price:v.price?Number(v.price):null,mileage:v.mileage?Number(v.mileage):null};delete payload.vehicle_images;let id=v.id;if(id){const{error}=await supabase.from('vehicles').update(payload).eq('id',id);if(error){alert(error.message);setSaving(false);return}}else{const{data,error}=await supabase.from('vehicles').insert(payload).select().single();if(error){alert(error.message);setSaving(false);return}id=data.id}let order=images.length;for(let i=0;i<files.length;i++){const f=files[i];if(!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>8*1024*1024)continue;const ext=(f.name.split('.').pop()||'jpg').toLowerCase();const path=`vehicles/${id}/${crypto.randomUUID()}.${ext}`;const{error:upErr}=await supabase.storage.from('vehicle-images').upload(path,f,{upsert:false,contentType:f.type});if(upErr)continue;const{data:pub}=supabase.storage.from('vehicle-images').getPublicUrl(path);await supabase.from('vehicle_images').insert({vehicle_id:id,image_url:pub.publicUrl,storage_path:path,sort_order:order++})}setSaving(false);onDone?.()}
- return <section><div className="sectionHeading"><div><span className="kicker">INVENTORY MANAGER</span><h1>{v.id?'Edit Vehicle':'Add Vehicle'}</h1><p>{v.id?'Update details, photos and listing status.':'Create a professional vehicle listing.'}</p></div></div><form className="form vehicleForm" onSubmit={save}><div className="grid2">{[['year','Year','number'],['make','Make','text'],['model','Model','text'],['trim','Trim','text'],['price','Price','number'],['mileage','Mileage (km)','number'],['vin','VIN','text'],['transmission','Transmission','text'],['drivetrain','Drivetrain','text'],['fuel_type','Fuel type','text'],['exterior_color','Exterior colour','text'],['interior_color','Interior colour','text']].map(([name,label,type])=><label key={name}>{label}<input name={name} type={type} value={v[name]??''} onChange={change} required={['year','make','model'].includes(name)}/></label>)}</div><label>Description<textarea name="description" rows="5" value={v.description||''} onChange={change}/></label><div className="grid2"><label>Status<select name="status" value={v.status} onChange={change}><option value="available">Available</option><option value="pending">Pending</option><option value="sold">Sold</option></select></label><label>Add Photos<input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={e=>setFiles([...e.target.files])}/><small>JPEG/PNG/WebP, max 8 MB each. New photos are added after existing photos.</small></label></div><div className="checks"><label><input type="checkbox" name="featured" checked={!!v.featured} onChange={change}/> Featured</label><label><input type="checkbox" name="published" checked={!!v.published} onChange={change}/> Published on website</label></div>{images.length>0&&<div className="photoManager"><div className="photoManagerHead"><div><h2>Vehicle Photos</h2><p>The first image is the cover photo. Reorder, set a cover, or delete photos anytime.</p></div><span>{images.length} photo{images.length===1?'':'s'}</span></div><div className="photoGrid">{images.map((img,i)=><article className="photoTile" key={img.id}><div className="photoPreview"><img src={img.image_url} alt={`Vehicle photo ${i+1}`}/>{i===0&&<span className="coverBadge">Cover</span>}<span className="photoNumber">{i+1}</span></div><div className="photoActions"><button type="button" className="mini" disabled={i===0} onClick={()=>moveImage(i,-1)}>←</button><button type="button" className="mini" disabled={i===images.length-1} onClick={()=>moveImage(i,1)}>→</button><button type="button" className="mini wide" disabled={i===0} onClick={()=>setCover(i)}>Set Cover</button><button type="button" className="mini delete" onClick={()=>deleteImage(img)}>Delete</button></div></article>)}</div></div>}<button disabled={saving}>{saving?'Saving…':'Save Vehicle'}</button></form></section>
+ async function save(e){
+   e.preventDefault();setSaving(true);
+   const payload={...v,year:Number(v.year),price:v.price?Number(v.price):null,mileage:v.mileage?Number(v.mileage):null};
+   delete payload.vehicle_images;
+   let id=v.id;
+   if(id){const{error}=await supabase.from('vehicles').update(payload).eq('id',id);if(error){alert(error.message);setSaving(false);return}}
+   else{const{data,error}=await supabase.from('vehicles').insert(payload).select().single();if(error){alert(error.message);setSaving(false);return}id=data.id}
+   let order=images.length;
+   for(const f of files){
+     const ext=(f.name.split('.').pop()||'jpg').toLowerCase();
+     const path=`vehicles/${id}/${crypto.randomUUID()}.${ext}`;
+     const{error:upErr}=await supabase.storage.from('vehicle-images').upload(path,f,{upsert:false,contentType:f.type});
+     if(upErr)continue;
+     const{data:pub}=supabase.storage.from('vehicle-images').getPublicUrl(path);
+     await supabase.from('vehicle_images').insert({vehicle_id:id,image_url:pub.publicUrl,storage_path:path,sort_order:order++})
+   }
+   setSaving(false);onDone?.()
+ }
+ return <section className="editorPage">
+   <div className="sectionHeading"><div><span className="kicker">INVENTORY MANAGER</span><h1>{v.id?'Edit Vehicle':'Add Vehicle'}</h1><p>{v.id?'Update vehicle details, photos and listing status.':'Create a polished vehicle listing for the public website.'}</p></div></div>
+   <form className="form vehicleForm" onSubmit={save}>
+     <div className="formCard">
+       <div className="formCardTitle"><div><span>01</span><div><h2>Vehicle Details</h2><p>Core information customers will see on the listing.</p></div></div></div>
+       <div className="grid2">{[['year','Year','number'],['make','Make','text'],['model','Model','text'],['trim','Trim','text'],['price','Price','number'],['mileage','Mileage (km)','number'],['vin','VIN','text'],['transmission','Transmission','text'],['drivetrain','Drivetrain','text'],['fuel_type','Fuel type','text'],['exterior_color','Exterior colour','text'],['interior_color','Interior colour','text']].map(([name,label,type])=><label key={name}>{label}<input name={name} type={type} value={v[name]??''} onChange={change} required={['year','make','model'].includes(name)}/></label>)}</div>
+       <label>Description<textarea name="description" rows="5" value={v.description||''} onChange={change} placeholder="Condition, features, service history, highlights..."/></label>
+     </div>
+
+     <div className="formCard">
+       <div className="formCardTitle"><div><span>02</span><div><h2>Photos</h2><p>The first image becomes the cover photo on Cars for Sale.</p></div></div></div>
+       <label className="uploadBox">Add vehicle photos
+         <input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={e=>addFiles(e.target.files)}/>
+         <span>Choose JPEG, PNG or WebP images • max 8 MB each</span>
+       </label>
+
+       {images.length>0&&<div className="photoManager">
+         <div className="photoManagerHead"><div><h3>Saved Photos</h3><p>These photos are already uploaded.</p></div><span>{images.length} saved</span></div>
+         <div className="photoGrid">{images.map((img,i)=><article className="photoTile" key={img.id}>
+           <div className="photoPreview"><img src={img.image_url} alt={`Vehicle photo ${i+1}`}/>{i===0&&<span className="coverBadge">Cover</span>}<span className="photoNumber">{i+1}</span></div>
+           <div className="photoActions"><button type="button" className="mini" disabled={i===0} onClick={()=>moveImage(i,-1)}>←</button><button type="button" className="mini" disabled={i===images.length-1} onClick={()=>moveImage(i,1)}>→</button><button type="button" className="mini wide" disabled={i===0} onClick={()=>setCover(i)}>Set Cover</button><button type="button" className="mini delete" onClick={()=>deleteImage(img)}>Delete</button></div>
+         </article>)}</div>
+       </div>}
+
+       {files.length>0&&<div className="photoManager pendingUploads">
+         <div className="photoManagerHead"><div><h3>New Photos</h3><p>Reorder or remove these before saving the vehicle.</p></div><span>{files.length} selected</span></div>
+         <div className="photoGrid">{files.map((f,i)=><article className="photoTile" key={`${f.name}-${f.lastModified}-${i}`}>
+           <div className="photoPreview"><img src={URL.createObjectURL(f)} alt={`Selected vehicle photo ${i+1}`}/>{images.length===0&&i===0&&<span className="coverBadge">Cover</span>}<span className="photoNumber">{images.length+i+1}</span></div>
+           <div className="photoActions"><button type="button" className="mini" disabled={i===0} onClick={()=>moveNew(i,-1)}>←</button><button type="button" className="mini" disabled={i===files.length-1} onClick={()=>moveNew(i,1)}>→</button><button type="button" className="mini wide" disabled={i===0||images.length>0} onClick={()=>newCover(i)}>Set Cover</button><button type="button" className="mini delete" onClick={()=>removeNew(i)}>Remove</button></div>
+         </article>)}</div>
+       </div>}
+       {images.length===0&&files.length===0&&<div className="photoEmpty"><strong>No photos selected yet</strong><span>Add multiple photos above. You can reorder them before saving.</span></div>}
+     </div>
+
+     <div className="formCard">
+       <div className="formCardTitle"><div><span>03</span><div><h2>Listing Status</h2><p>Control how this vehicle appears on the public website.</p></div></div></div>
+       <div className="grid2"><label>Status<select name="status" value={v.status} onChange={change}><option value="available">Available</option><option value="pending">Pending</option><option value="sold">Sold</option></select></label><div className="statusHelp"><strong>Available</strong><span>Normal listing</span><strong>Pending</strong><span>Visible with Pending watermark</span><strong>Sold</strong><span>Hidden from public inventory</span></div></div>
+       <div className="checks polishedChecks"><label><input type="checkbox" name="featured" checked={!!v.featured} onChange={change}/><span><strong>Featured vehicle</strong><small>Prioritize this vehicle on the homepage.</small></span></label><label><input type="checkbox" name="published" checked={!!v.published} onChange={change}/><span><strong>Published on website</strong><small>Allow customers to see this listing.</small></span></label></div>
+     </div>
+     <div className="saveBar"><div><strong>{v.id?'Ready to update this listing?':'Ready to publish this vehicle?'}</strong><span>You can change these details again at any time.</span></div><button className="saveVehicle" disabled={saving}>{saving?'Saving…':'Save Vehicle'}</button></div>
+   </form>
+ </section>
 }
 function Promos({supabase,setNotice}){const[items,setItems]=useState([]);const[title,setTitle]=useState('');const[details,setDetails]=useState('');async function load(){const{data}=await supabase.from('promotions').select('*').order('sort_order');setItems(data||[])}useEffect(()=>{load()},[]);async function add(e){e.preventDefault();const{error}=await supabase.from('promotions').insert({title,details,published:true});if(error)setNotice(error.message);else{setTitle('');setDetails('');load();setNotice('Promotion published.')}}async function toggle(x){await supabase.from('promotions').update({published:!x.published}).eq('id',x.id);load()}return <section><h1>Promotions</h1><form className="form compact" onSubmit={add}><label>Promotion title<input value={title} onChange={e=>setTitle(e.target.value)} required/></label><label>Details<textarea value={details} onChange={e=>setDetails(e.target.value)}/></label><button>Add Promotion</button></form><div className="table">{items.map(x=><div className="row" key={x.id}><div><strong>{x.title}</strong><small>{x.details}</small></div><button className="secondary" onClick={()=>toggle(x)}>{x.published?'Hide':'Publish'}</button></div>)}</div></section>}
 function Services({supabase,setNotice}){const[items,setItems]=useState([]);const[name,setName]=useState('');const[description,setDescription]=useState('');async function load(){const{data}=await supabase.from('services').select('*').order('sort_order');setItems(data||[])}useEffect(()=>{load()},[]);async function add(e){e.preventDefault();const{error}=await supabase.from('services').insert({name,description,published:true});if(error)setNotice(error.message);else{setName('');setDescription('');load();setNotice('Repair service added.')}}async function remove(id){await supabase.from('services').delete().eq('id',id);load()}return <section><h1>Repair Services</h1><form className="form compact" onSubmit={add}><label>Service name<input value={name} onChange={e=>setName(e.target.value)} required/></label><label>Description<textarea value={description} onChange={e=>setDescription(e.target.value)}/></label><button>Add Service</button></form><div className="table">{items.map(x=><div className="row" key={x.id}><div><strong>{x.name}</strong><small>{x.description}</small></div><button className="danger" onClick={()=>remove(x.id)}>Delete</button></div>)}</div></section>}
