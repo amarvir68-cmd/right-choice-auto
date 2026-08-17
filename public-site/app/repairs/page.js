@@ -56,8 +56,8 @@ export default async function Repairs(){
      <div className="repairHeroCopy">
        <p className="eyebrow">WINNIPEG AUTO REPAIR</p>
        <h1>Auto Repair Services</h1>
-       <p className="repairLead">Professional care. Straightforward advice. Quality work you can count on.</p>
-       <p>From routine maintenance to more involved repairs, Right Choice Auto helps keep Winnipeg drivers moving.</p>
+       <p className="repairLead">Straightforward service. Dependable repairs. Local experience you can count on.</p>
+       <p>From routine maintenance to diagnostics and repairs, Right Choice Auto helps keep Winnipeg drivers safe and moving.</p>
        <a className="btn red" href={phoneHref}>Call Now</a>
      </div>
    </section>
@@ -66,7 +66,7 @@ export default async function Repairs(){
      <div className="repairIntro">
        <p className="eyebrow">WHAT WE DO</p>
        <h2>Complete Auto Repair &amp; Maintenance</h2>
-       <p>Choose a service below or call us if you are not sure what your vehicle needs.</p>
+       <p>Explore our repair services below. If you are not sure what your vehicle needs, call us and we’ll help you with the next step.</p>
      </div>
      <div className="repairCards">
        {items.map(s=><article className="repairCard" key={s.id}>
@@ -80,7 +80,7 @@ export default async function Repairs(){
        </article>)}
      </div>
      <div className="repairCTA">
-       <div><p className="eyebrow">NEED SERVICE?</p><h2>Talk to Right Choice Auto.</h2><p>Call us and tell us what your vehicle is doing. We’ll help you with the next step.</p></div>
+       <div><p className="eyebrow">NEED AUTO REPAIR?</p><h2>Let’s Get Your Vehicle Looked At.</h2><p>Call us and tell us what your vehicle is doing. We’ll help you with the next step.</p></div>
        <a className="btn red" href={phoneHref}>Call {phone}</a>
      </div>
    </section>
