@@ -108,7 +108,10 @@ insert into public.site_settings(key,value) values
  ('hours',''),
  ('home_intro','Quality cars. Reliable repairs. Straightforward service from a local Winnipeg shop.'),
  ('about_short','Right Choice Auto Repair & Car Sales serves Winnipeg drivers from 1129 Fife Street.'),
- ('about_full','We help Winnipeg drivers with practical auto repairs and used vehicle sales. Our goal is a straightforward experience from the first call to the final handoff.')
+ ('about_full','We help Winnipeg drivers with practical auto repairs and used vehicle sales. Our goal is a straightforward experience from the first call to the final handoff.'),
+ ('facebook_url',''),
+ ('instagram_url',''),
+ ('tiktok_url','')
 on conflict (key) do nothing;
 
 insert into public.services(name,description,sort_order) values
