@@ -21,7 +21,7 @@ export async function getSiteData() {
     supabase.from('site_settings').select('*'),
     supabase.from('promotions').select('*').eq('published', true).order('sort_order'),
     supabase.from('services').select('*').eq('published', true).order('sort_order'),
-    supabase.from('vehicles').select('*, vehicle_images(*)').eq('published', true).eq('status', 'available').order('featured', { ascending: false }).order('created_at', { ascending: false })
+    supabase.from('vehicles').select('*, vehicle_images(*)').eq('published', true).in('status', ['available','pending']).order('featured', { ascending: false }).order('created_at', { ascending: false })
   ]);
   const settings = Object.fromEntries((settingsRes.data || []).map(x => [x.key, x.value]));
   return { settings, promotions: promosRes.data || [], services: servicesRes.data || [], vehicles: vehiclesRes.data || [] };

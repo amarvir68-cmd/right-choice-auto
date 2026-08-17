@@ -79,8 +79,8 @@ alter table public.services enable row level security;
 alter table public.site_settings enable row level security;
 
 -- Public website: read-only access to published content.
-create policy "public read published vehicles" on public.vehicles for select to anon, authenticated using (published = true and status = 'available');
-create policy "public read images of published vehicles" on public.vehicle_images for select to anon, authenticated using (exists(select 1 from public.vehicles v where v.id=vehicle_id and v.published=true and v.status='available'));
+create policy "public read published vehicles" on public.vehicles for select to anon, authenticated using (published = true and status in ('available','pending'));
+create policy "public read images of published vehicles" on public.vehicle_images for select to anon, authenticated using (exists(select 1 from public.vehicles v where v.id=vehicle_id and v.published=true and v.status in ('available','pending')));
 create policy "public read promotions" on public.promotions for select to anon, authenticated using (published=true and (starts_at is null or starts_at<=now()) and (ends_at is null or ends_at>=now()));
 create policy "public read services" on public.services for select to anon, authenticated using (published=true);
 create policy "public read site settings" on public.site_settings for select to anon, authenticated using (true);
