@@ -66,7 +66,6 @@ export default async function Repairs(){
      <div className="repairIntro">
        <p className="eyebrow">WHAT WE DO</p>
        <h2>Complete Auto Repair &amp; Maintenance</h2>
-       <p>Choose a service below or call us if you are not sure what your vehicle needs.</p>
      </div>
      <div className="repairCards">
        {items.map(s=><article className="repairCard" key={s.id}>
