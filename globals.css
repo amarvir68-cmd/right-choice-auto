@@ -52,3 +52,6 @@ html,body{max-width:100%;overflow-x:clip}.detail{width:100%;max-width:1500px;mar
 .vehiclePhotoOverlay .photoOverlayStage>img{width:auto;max-width:min(100%,calc(100vw - 128px));height:auto;max-height:100%;object-fit:contain}
 .vehiclePhotoOverlay .photoOverlayThumbs{flex-shrink:0}
 @media(max-width:620px){.vehiclePhotoOverlay .photoOverlayStage>img{max-width:calc(100vw - 80px)}.vehiclePhotoOverlay .photoOverlayFooter{font-size:12px}}
+
+/* v19: inventory photos lead to vehicle details; fullscreen gallery remains on details page. */
+.inventoryPhotoLink{display:grid;cursor:pointer;text-decoration:none;overflow:hidden}.inventoryPhotoLink:focus-visible{outline:3px solid #fca311;outline-offset:3px}.inventoryPhotoLink img{display:block;width:100%;height:100%;object-fit:cover}.inventoryPhotoLink:hover img{filter:brightness(.93)}

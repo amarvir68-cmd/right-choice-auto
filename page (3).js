@@ -1,40 +1,90 @@
-import Link from 'next/link';
-import { getSiteData } from '../lib/supabase';
-import {baseMetadata,jsonLd,absoluteUrl,SITE_NAME,DEFAULT_PHONE,DEFAULT_ADDRESS} from '../lib/seo';
-import { Header, Footer, VehicleCard } from './components';
-import PromoRotator from './PromoRotator';
+import {baseMetadata} from '../../lib/seo';
+import {getSiteData} from '../../lib/supabase';
+import {Header,Footer} from '../components';
+import RepairRequest from './RepairRequest';
 
-const fallbackServices=['Oil Changes','Brake Service','Engine Diagnostics','Suspension & Steering','Tires & Wheels','General Repairs'];
-export const revalidate = 60;
+export const revalidate=60;
 export const metadata=baseMetadata({
- title:'Used Cars & Auto Repair in Winnipeg',
- description:'Right Choice Auto Repair & Car Sales offers used vehicles for sale and professional auto repair services in Winnipeg, Manitoba.',
- path:'/'
+ title:'Auto Repair Services in Winnipeg',
+ description:'Auto repair services in Winnipeg including oil changes, brakes, diagnostics, suspension, steering, tires and general repairs.',
+ path:'/repairs',
+ image:'/repair/hero.jpg'
 });
-export default async function Home(){
- const {settings,promotions,services,vehicles}=await getSiteData();
- const featured=vehicles.filter(v=>v.featured).slice(0,3).length?vehicles.filter(v=>v.featured).slice(0,3):vehicles.slice(0,3);
- const phone=settings.phone||DEFAULT_PHONE;
- const address=settings.address||DEFAULT_ADDRESS;
- const businessSchema={
-   '@context':'https://schema.org',
-   '@type':['AutoRepair','AutoDealer'],
-   '@id':`${absoluteUrl('/')}#business`,
-   name:SITE_NAME,
-   url:absoluteUrl('/'),
-   telephone:phone,
-   image:absoluteUrl('/right-choice-logo.png'),
-   logo:absoluteUrl('/right-choice-logo.png'),
-   address:{'@type':'PostalAddress',streetAddress:'1129 Fife Street',addressLocality:'Winnipeg',addressRegion:'MB',postalCode:'R2X 2N1',addressCountry:'CA'},
-   areaServed:{'@type':'City',name:'Winnipeg'},
-   sameAs:[settings.facebook_url,settings.instagram_url,settings.tiktok_url].filter(Boolean)
- };
- return <><script type="application/ld+json" dangerouslySetInnerHTML={{__html:jsonLd(businessSchema)}}/><Header/><main>
-  <PromoRotator promotions={promotions}/>
-  <section className="hero"><div><p className="eyebrow">WINNIPEG • AUTO REPAIR • USED CARS</p><h1>Your <em>Right Choice</em><br/>for Cars &amp; Auto Care.</h1><p>{settings.home_intro||'Quality used vehicles and dependable auto repair from a local Winnipeg shop.'}</p><div className="actions"><Link className="btn red" href="/cars">View Cars for Sale</Link><Link className="btn outline" href="/repairs">Repair Services</Link></div></div><div className="heroArt"><img className="heroLogo" src="/right-choice-logo.png" alt="Right Choice Auto Repair & Car Sales"/></div></section>
-  <section className="section"><div className="sectionHead"><div><p className="eyebrow">CARS FOR SALE</p><h2>Featured Vehicles</h2></div><Link href="/cars">View all cars →</Link></div>{featured.length?<div className="cards">{featured.map(v=><VehicleCard key={v.id} car={v}/>)}</div>:<div className="empty"><h3>New inventory is coming soon.</h3><p>Call us for current vehicle availability.</p><a href={`tel:+1${(settings.phone||'204-632-4296').replace(/\D/g,'').replace(/^1/,'')}`}>{settings.phone||'204-632-4296'}</a></div>}</section>
-  <section className="section dark"><p className="eyebrow">AUTO REPAIR</p><h2>Reliable Auto Repair in Winnipeg</h2><div className="services">{[...new Map((services.length?services.map(s=>s.name):fallbackServices).map(n=>[n.trim().toLocaleLowerCase('en-CA'),n])).values()].slice(0,6).map(name=><div key={name}><span>◆</span><h3>{name}</h3></div>)}</div><a className="btn red full" href={`tel:+1${(settings.phone||'204-632-4296').replace(/\D/g,'').replace(/^1/,'')}`}>Call Now: {settings.phone||'204-632-4296'}</a></section>
-  {settings.google_reviews_url&&/^https:\/\/(www\.)?google\.com\//i.test(settings.google_reviews_url)&&<section className="section reviewsTeaser"><p className="eyebrow">CUSTOMER FEEDBACK</p><h2>See What Customers Are Saying</h2><p>Read customer reviews on our Google Business Profile. Reviews are not edited or recreated on this website.</p><a className="btn outline" href={settings.google_reviews_url} target="_blank" rel="noopener noreferrer">Read Google Reviews ↗</a></section>}
-  <section className="section split"><div><p className="eyebrow">ABOUT RIGHT CHOICE</p><h2>Cars and Auto Repair Under One Roof</h2><p>{settings.about_short||'Right Choice Auto Repair & Car Sales serves Winnipeg drivers from 1129 Fife Street.'}</p></div><div className="panel"><strong>Visit Right Choice Auto</strong><p>{settings.address||'1129 Fife Street, Winnipeg, MB R2X 2N1'}</p><a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(settings.address||'1129 Fife Street, Winnipeg, MB R2X 2N1')}`} target="_blank" rel="noreferrer">Get directions →</a></div></section>
+
+const fallbackServices=[
+ {id:'oil',name:'Oil Changes',description:'Routine oil and filter service to help protect your engine.'},
+ {id:'brakes',name:'Brake Service',description:'Brake inspections, pads, rotors and related repairs.'},
+ {id:'diagnostics',name:'Engine Diagnostics',description:'Warning lights, drivability issues and mechanical troubleshooting.'},
+ {id:'suspension',name:'Suspension & Steering',description:'Repairs for ride quality, handling and steering concerns.'},
+ {id:'tires',name:'Tires & Wheels',description:'Tire-related service, wheel concerns and seasonal help.'},
+ {id:'general',name:'General Repairs',description:'Everyday maintenance and practical repair solutions.'}
+];
+
+function serviceImage(name=''){
+ const n=name.toLowerCase();
+ if(n.includes('oil')) return '/repair/oil-changes.jpg';
+ if(n.includes('brake')) return '/repair/brake-service.jpg';
+ if(n.includes('diagnostic')||n.includes('engine')) return '/repair/engine-diagnostics.jpg';
+ if(n.includes('suspension')||n.includes('steering')) return '/repair/suspension-steering.jpg';
+ if(n.includes('tire')||n.includes('wheel')) return '/repair/tires-wheels.jpg';
+ if(n.includes('a/c')||n.includes('air condition')||n.includes('ac service')) return '/repair/ac-service.jpg';
+ if(n.includes('transmission')) return '/repair/transmission-service.jpg';
+ return '/repair/general-repairs.jpg';
+}
+
+function serviceIcon(name=''){
+ const n=name.toLowerCase();
+ if(n.includes('oil')) return '◉';
+ if(n.includes('brake')) return '◎';
+ if(n.includes('diagnostic')||n.includes('engine')) return '▣';
+ if(n.includes('suspension')||n.includes('steering')) return '◆';
+ if(n.includes('tire')||n.includes('wheel')) return '◌';
+ if(n.includes('a/c')||n.includes('air condition')) return '✦';
+ if(n.includes('transmission')) return '⚙';
+ return '⌁';
+}
+
+export default async function Repairs(){
+ const {services,settings}=await getSiteData();
+ const items=services.length?services:fallbackServices;
+ const phone=settings.phone||'204-632-4296';
+ const phoneHref=`tel:+1${phone.replace(/\D/g,'').replace(/^1/,'')}`;
+
+ return <><Header/><main className="repairPage">
+   <section className="repairHero">
+     <img src="/repair/hero.jpg" alt="Automotive repair work being performed in a professional shop"/>
+     <div className="repairHeroShade"></div>
+     <div className="repairHeroCopy">
+       <p className="eyebrow">WINNIPEG AUTO REPAIR</p>
+       <h1>Auto Repair Services</h1>
+       <p className="repairLead">Straightforward service. Dependable repairs. Local experience you can count on.</p>
+       <p>From routine maintenance to diagnostics and repairs, Right Choice Auto helps keep Winnipeg drivers safe and moving.</p>
+       <a className="btn red" href={phoneHref}>Call Now</a>
+     </div>
+   </section>
+
+   <section className="section repairServicesSection">
+     <div className="repairIntro">
+       <p className="eyebrow">WHAT WE DO</p>
+       <h2>Complete Auto Repair &amp; Maintenance</h2>
+       <p>Explore our repair services below. If you are not sure what your vehicle needs, call us and we’ll help you with the next step.</p>
+     </div>
+     <div className="repairCards">
+       {items.map(s=><article className="repairCard" key={s.id}>
+         <div className="repairCardImage">
+           <img src={serviceImage(s.name)} alt={`${s.name} auto repair service`}/>
+         </div>
+         <div className="repairCardBody">
+           <div className="repairCardTitle"><span>{serviceIcon(s.name)}</span><h3>{s.name}</h3></div>
+           <p>{s.description||'Contact Right Choice Auto for service details.'}</p>
+         </div>
+       </article>)}
+     </div>
+     <div className="repairCTA">
+       <div><p className="eyebrow">NEED AUTO REPAIR?</p><h2>Let’s Get Your Vehicle Looked At.</h2><p>Call us and tell us what your vehicle is doing. We’ll help you with the next step.</p></div>
+       <a className="btn red" href={phoneHref}>Call {phone}</a>
+     </div>
+   </section>
+   <RepairRequest/>
  </main><Footer/></>;
 }
