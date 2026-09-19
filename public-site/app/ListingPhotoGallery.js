@@ -1,9 +1,12 @@
 'use client';
 import {useEffect,useState,useRef} from 'react';
+import {createPortal} from 'react-dom';
 
 export default function ListingPhotoGallery({images,name,pending=false}){
  const [index,setIndex]=useState(0);
  const [open,setOpen]=useState(false);
+ const [mounted,setMounted]=useState(false);
+ useEffect(()=>setMounted(true),[]);
  const closeRef=useRef(null),triggerRef=useRef(null);
  useEffect(()=>{
   if(!open)return;
@@ -28,7 +31,7 @@ export default function ListingPhotoGallery({images,name,pending=false}){
    {pending&&<span className="pendingWatermark">PENDING</span>}
    <span className="photoZoomLabel">⛶ View photos{images.length>1?` (${images.length})`:''}</span>
   </button>
-  {open&&<div className="vehiclePhotoOverlay" role="dialog" aria-modal="true" aria-label={`${name} photos`}>
+  {open&&mounted&&createPortal(<div className="vehiclePhotoOverlay" role="dialog" aria-modal="true" aria-label={`${name} photos`}>
    <button type="button" ref={closeRef} className="photoOverlayClose" onClick={()=>setOpen(false)} aria-label="Close photo gallery">×</button>
    <div className="photoOverlayStage">
     {images.length>1&&<button type="button" className="photoOverlayArrow" onClick={prev} aria-label="Previous photo">‹</button>}
@@ -37,6 +40,6 @@ export default function ListingPhotoGallery({images,name,pending=false}){
    </div>
    <div className="photoOverlayFooter"><span>{index+1} / {images.length}</span><span>{name}</span></div>
    {images.length>1&&<div className="photoOverlayThumbs">{images.map((image,i)=><button type="button" key={image.id||i} className={i===index?'active':''} onClick={()=>setIndex(i)} aria-label={`View photo ${i+1}`}><img src={image.image_url} alt="" loading="lazy" decoding="async"/></button>)}</div>}
-  </div>}
+  </div>,document.body)}
  </>;
 }
