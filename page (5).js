@@ -1,9 +1,11 @@
+import InventoryBrowser from '../InventoryBrowser';
 import {baseMetadata} from '../../lib/seo';
-import{getSiteData}from '../../lib/supabase';import{Header,Footer}from '../components';
-export const revalidate=60;
+import { getSiteData } from '../../lib/supabase';
+import { Header, Footer, VehicleCard } from '../components';
+export const revalidate=30;
 export const metadata=baseMetadata({
- title:'Contact Right Choice Auto in Winnipeg',
- description:'Contact Right Choice Auto Repair & Car Sales at 1129 Fife Street in Winnipeg for used vehicles and auto repair service.',
- path:'/contact'
+ title:'Used Cars for Sale in Winnipeg',
+ description:'Browse current used cars for sale at Right Choice Auto Repair & Car Sales in Winnipeg. View prices, mileage, photos and vehicle details.',
+ path:'/cars'
 });
-export default async function Contact(){const{settings}=await getSiteData();const phone=settings.phone||'204-632-4296';const address=settings.address||'1129 Fife Street, Winnipeg, MB R2X 2N1';const phoneHref=`tel:+1${phone.replace(/\D/g,'').replace(/^1/,'')}`;const map=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;return <><Header/><main><section className="pageHero"><p className="eyebrow">CONTACT</p><h1>Visit or Call Right Choice Auto</h1></section><section className="section contact"><div><small>PHONE</small><a href={phoneHref}>{phone}</a></div><div><small>ADDRESS</small><strong>{address}</strong><a href={map} target="_blank" rel="noreferrer">Get directions →</a></div>{settings.hours&&<div><small>HOURS</small><strong>{settings.hours}</strong></div>}</section></main><Footer/></>}
+export default async function Cars(){const {vehicles}=await getSiteData();return <><Header/><main><section className="pageHero"><p className="eyebrow">RIGHT CHOICE INVENTORY</p><h1>Cars for Sale</h1><p>Browse our current used vehicle inventory. See something you like? Call us to confirm availability or arrange a viewing.</p></section><section className="section">{vehicles.length?<InventoryBrowser vehicles={vehicles}/>:<div className="empty"><h2>No vehicles available right now.</h2><p>Our inventory changes regularly. Call us for the latest availability.</p><a href="tel:+12046324296">204-632-4296</a></div>}</section></main><Footer/></>}
