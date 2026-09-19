@@ -1,6 +1,7 @@
 import {baseMetadata} from '../../lib/seo';
 import {getSiteData} from '../../lib/supabase';
 import {Header,Footer} from '../components';
+import RepairRequest from './RepairRequest';
 
 export const revalidate=60;
 export const metadata=baseMetadata({
@@ -84,5 +85,6 @@ export default async function Repairs(){
        <a className="btn red" href={phoneHref}>Call {phone}</a>
      </div>
    </section>
+   <RepairRequest/>
  </main><Footer/></>;
 }

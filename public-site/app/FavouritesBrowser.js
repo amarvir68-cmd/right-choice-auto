@@ -1,0 +1,5 @@
+'use client';
+import {useEffect,useState} from 'react';
+import Link from 'next/link';
+import {VehicleCard} from './components';
+export default function FavouritesBrowser({vehicles}){const[ids,setIds]=useState([]);useEffect(()=>{try{setIds(JSON.parse(localStorage.getItem('rc-favourites')||'[]'))}catch{setIds([])}},[]);const saved=vehicles.filter(v=>ids.includes(v.id));return <><p>Saved vehicles are stored only in this browser. They will not sync across devices.</p>{saved.length?<div className="cards">{saved.map(v=><div className="browserCard" key={v.id}><VehicleCard car={v}/><button className="filterClear" onClick={()=>{const next=ids.filter(x=>x!==v.id);localStorage.setItem('rc-favourites',JSON.stringify(next));setIds(next)}}>Remove favourite</button></div>)}</div>:<div className="empty"><h2>No available favourites</h2><p>Browse the inventory and save the vehicles that interest you. Sold or removed vehicles will no longer appear here.</p><Link href="/cars">Browse inventory →</Link></div>}</>}

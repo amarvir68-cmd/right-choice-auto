@@ -4,7 +4,7 @@ import {createClient} from '@supabase/supabase-js';
 
 function client(){
   const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   return url&&key?createClient(url,key,{auth:{persistSession:false}}):null;
 }
 function vehicleId(path){
@@ -22,6 +22,7 @@ export default function AnalyticsTracker(){
       const href=a.getAttribute('href')||'';
       let event_name=null;
       if(href.startsWith('tel:'))event_name='call_click';
+      else if(/google\.com\/maps/i.test(href))event_name='directions_click';
       else if(/facebook\.com/i.test(href))event_name='facebook_click';
       else if(/instagram\.com/i.test(href))event_name='instagram_click';
       else if(/tiktok\.com/i.test(href))event_name='tiktok_click';
