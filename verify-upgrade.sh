@@ -18,7 +18,7 @@ for(const [name,condition] of Object.entries({
  'repair page contains form':repairs.includes('<RepairRequest/>'),
  'repair table uses RLS':db.includes('enable row level security'),
  'repair read restricted to admin':db.includes('using(public.is_admin())'),
- 'admin repair tab':admin.includes("['repairs','Repair Requests']"),
+ 'admin repair tab':admin.includes("['repairs','⚒','Repair Requests']"),
  'gallery restores focus':gallery.includes('triggerRef.current?.focus()'),
  'inventory min price':inventory.includes('setMinPrice'),
  'inventory drivetrain':inventory.includes('setDrivetrain'),

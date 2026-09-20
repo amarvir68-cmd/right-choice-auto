@@ -5,7 +5,7 @@ const checks={
  'responsive menu works':page.includes('setMenu(x=>!x)')&&css.includes('.v23SidebarOpen'),
  'overview uses database lead counts':page.includes("from('vehicle_inquiries').select('id,status,created_at')")&&page.includes("from('repair_requests').select('id,status,created_at')"),
  'KPI cards navigate':page.includes('v23LeadGrid')&&page.includes("navigate('inquiries')"),
- 'inquiry search and pipeline':page.includes('v23LeadToolbar')&&page.includes('v23Pipeline'),
+ 'inquiry search and pipeline':page.includes('function LeadToolbar(')&&page.includes('v23Pipeline'),
  'repair pipeline':page.includes("['new','contacted','confirmed','closed'].map(status=>"),
  'inquiry status persisted':page.includes("from('vehicle_inquiries').update({status})"),
  'repair status persisted':page.includes("from('repair_requests').update({status})"),

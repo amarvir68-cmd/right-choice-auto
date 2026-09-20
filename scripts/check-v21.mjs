@@ -17,7 +17,7 @@ const checks={
  'inquiry API preserved':read('public-site/app/VehicleInquiry.js').includes("fetch('/api/inquiries'"),
  'admin inquiry status updates preserved':admin.includes("from('vehicle_inquiries').update({status})"),
  'admin repair management preserved':admin.includes("from('repair_requests')"),
- 'admin inquiry status badges':admin.includes('leadStatus')&&admin.includes('No inquiries match this search or status.'),
+ 'admin inquiry status badges':admin.includes('leadStatus')&&admin.includes('No inquiries match your filters.'),
  'SEO and schemas retained':home.includes('jsonLd(businessSchema)')&&fs.existsSync('public-site/app/sitemap.js')&&fs.existsSync('public-site/app/robots.js'),
 };
 let failures=0;for(const [name,pass] of Object.entries(checks)){console.log(`${pass?'PASS':'FAIL'} ${name}`);if(!pass)failures++}process.exitCode=failures?1:0;
