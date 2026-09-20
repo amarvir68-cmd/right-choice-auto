@@ -24,3 +24,5 @@ Historical release notes and change reports consolidated from the v22 package. D
 - [V21-CHANGE-REPORT.md](V21-CHANGE-REPORT.md)
 - [V22-CHANGE-AND-SECURITY-REPORT.md](V22-CHANGE-AND-SECURITY-REPORT.md)
 - [UPDATE-NOTES.md](UPDATE-NOTES.md)
+
+- [V23 admin interactive redesign](V23-ADMIN-INTERACTIVE-REDESIGN.md) — interactive overview, lead pipeline controls and responsive dashboard.
