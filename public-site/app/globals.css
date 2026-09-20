@@ -113,3 +113,24 @@ html,body{max-width:100%;overflow-x:clip}.detail{width:100%;max-width:1500px;mar
 @media(max-width:1050px){.hero{grid-template-columns:1fr;min-height:0}.hero>div:first-child{padding:60px 5vw 25px}.heroArt{min-height:0;padding:10px 5vw 55px}.heroLogo{max-height:240px}}
 @media(max-width:620px){.hero h1{font-size:clamp(2.3rem,10vw,3.5rem)}.heroArt{padding-bottom:35px}.heroLogo{max-height:180px}.section{padding-block:55px}.sectionHead{align-items:start;flex-direction:column}.cards{grid-template-columns:minmax(0,1fr)}.header{min-width:0}.header .logo{min-width:0;flex:1 1 auto}.mobileMenuButton{flex:0 0 auto}.header .call{flex:0 0 auto}}
 @media(prefers-reduced-motion:reduce){.vehicleCard,.vehicleCardPhoto img,.btn,.heroLogo{animation:none!important;transition:none!important}}
+
+/* Mobile navigation fix: legacy `.header nav {display:none}` at <=950px
+   also hides the menu's nested nav. Override only the mobile dropdown. */
+@media (max-width:1200px) {
+  .header .mobileNavigation { display:block; flex:0 0 auto; }
+  .header .mobileNavigation .mobileNavLinks {
+    display:flex !important;
+    flex-direction:column;
+    position:absolute;
+    top:calc(100% + 8px);
+    right:0;
+    width:min(280px,calc(100vw - 24px));
+    max-height:calc(100dvh - 90px);
+    overflow-y:auto;
+    margin:0;
+    z-index:200;
+  }
+}
+@media (min-width:1201px) {
+  .header .mobileNavigation { display:none; }
+}
