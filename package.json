@@ -1,0 +1,11 @@
+{
+  "name": "right-choice-auto-platform",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm --prefix public-site install && npm --prefix admin-site install",
+    "build:public": "npm --prefix public-site run build",
+    "build:admin": "npm --prefix admin-site run build",
+    "build": "npm run build:public && npm run build:admin"
+  }
+}
