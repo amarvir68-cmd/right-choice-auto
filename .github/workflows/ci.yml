@@ -9,6 +9,7 @@ jobs:
   audit:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         app: [public-site, admin-site]
     defaults:
@@ -21,4 +22,6 @@ jobs:
           node-version: 22
       - run: npm install --no-fund --no-audit
       - run: npm audit --audit-level=high
-      - run: node ../scripts/check-v27.mjs
+      - name: v27 source checks
+        run: node scripts/check-v27.mjs
+        working-directory: .
