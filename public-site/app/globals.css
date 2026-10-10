@@ -134,3 +134,27 @@ html,body{max-width:100%;overflow-x:clip}.detail{width:100%;max-width:1500px;mar
 @media (min-width:1201px) {
   .header .mobileNavigation { display:none; }
 }
+
+/* v26: keep a single featured vehicle compact and information-first on the homepage. */
+.homeFeaturedSection{overflow:hidden}
+.homeFeaturedCards{width:100%}
+.homeFeaturedCards.featuredCount1{display:block;max-width:1180px;margin-inline:auto}
+.homeFeaturedCards.featuredCount1 .vehicleCard{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(320px,.75fr);min-height:380px;max-height:460px;border-radius:14px;background:#f4f5f6;overflow:hidden}
+.homeFeaturedCards.featuredCount1 .simpleInventoryPhoto{height:100%;min-height:380px;aspect-ratio:auto;border-radius:0}
+.homeFeaturedCards.featuredCount1 .simpleInventoryPhoto img{height:100%;object-fit:cover;object-position:center}
+.homeFeaturedCards.featuredCount1 .simpleInventoryBody{justify-content:center;padding:clamp(28px,4vw,52px);gap:13px}
+.homeFeaturedCards.featuredCount1 .simpleInventoryBody h3{font-size:clamp(27px,3vw,40px);line-height:1.08}
+.homeFeaturedCards.featuredCount1 .simpleInventoryPrice{font-size:clamp(30px,3vw,42px)}
+.homeFeaturedCards.featuredCount1 .simpleInventoryBody p{font-size:16px;line-height:1.6}
+.homeFeaturedCards.featuredCount1 .simpleInventoryButton{margin-top:14px;align-self:stretch;min-height:50px}
+.homeFeaturedCards.featuredCount1 .simpleInventoryStatus{top:16px;left:16px}
+@media(max-width:900px){
+ .homeFeaturedCards.featuredCount1 .vehicleCard{grid-template-columns:1fr;max-height:none;min-height:0}
+ .homeFeaturedCards.featuredCount1 .simpleInventoryPhoto{height:auto;min-height:0;aspect-ratio:16/9}
+ .homeFeaturedCards.featuredCount1 .simpleInventoryBody{padding:24px}
+}
+@media(max-width:620px){
+ .homeFeaturedCards.featuredCount1 .simpleInventoryPhoto{aspect-ratio:4/3}
+ .homeFeaturedCards.featuredCount1 .simpleInventoryBody h3{font-size:25px}
+ .homeFeaturedCards.featuredCount1 .simpleInventoryPrice{font-size:28px}
+}
