@@ -49,7 +49,7 @@ async function httpCheck(){
     ['Reject wrong content type',()=>fetch(endpoint,{method:'POST',headers:{'content-type':'text/plain'},body:'{}'}),415],
     ['Reject cross-origin POST',()=>fetch(endpoint,{method:'POST',headers:{'content-type':'application/json','origin':'https://evil.example'},body:JSON.stringify({})}),403],
     ['Reject cross-site fetch metadata',()=>fetch(endpoint,{method:'POST',headers:{'content-type':'application/json','sec-fetch-site':'cross-site'},body:JSON.stringify({})}),403],
-    ['Reject oversized request',()=>fetch(endpoint,{method:'POST',headers:{'content-type':'application/json','content-length':'13001'},body:JSON.stringify({message:'x'.repeat(12500)})}),413],
+    ['Reject oversized request',()=>fetch(endpoint,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:'x'.repeat(12500)})}),413],
     ['Reject malformed JSON',()=>fetch(endpoint,{method:'POST',headers:{'content-type':'application/json'},body:'{not-json'}),400],
   ];
   for(const [name,fn,expected] of calls){
