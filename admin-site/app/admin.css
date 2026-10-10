@@ -47,3 +47,190 @@ body{background:#090c0f}.top{height:82px;padding:0 34px;background:rgba(7,9,11,.
 
 /* v27 security/accountability */
 .auditList{display:grid;gap:10px;margin-top:22px}.auditItem{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:16px 18px;border:1px solid #29333b;border-radius:10px;background:#10161b}.auditItem>div{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.auditItem strong{text-transform:capitalize}.auditItem span,.auditItem small{color:#9eabb5}.auditItem code{font-size:11px;color:#d8dde1;background:#080b0e;padding:4px 7px;border-radius:5px}@media(max-width:700px){.auditItem{align-items:flex-start;flex-direction:column}}
+
+
+/* v29: premium admin polish — visual only, preserves existing workflows. */
+.adminV23 .sectionHeading,
+.adminV23 .titleRow{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:20px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+.adminV23 .sectionHeading h1,
+.adminV23 .titleRow h1{
+  margin:4px 0 8px;
+  font-size:clamp(30px,3.5vw,46px);
+  letter-spacing:-.04em;
+}
+.adminV23 .sectionHeading p,
+.adminV23 .titleRow p{
+  margin:0;
+  color:#9fb0c3;
+  line-height:1.6;
+  max-width:760px;
+}
+.adminV23 .formCard{
+  border:1px solid #344a61;
+  border-radius:18px;
+  background:linear-gradient(155deg,#16253a,#111d2c);
+  box-shadow:0 18px 42px #0002;
+}
+.adminV23 .formCard h2,
+.adminV23 .formCard h3{letter-spacing:-.02em}
+.adminV23 .form label{
+  color:#cfdae6;
+  font-size:13px;
+  font-weight:700;
+}
+.adminV23 .form input,
+.adminV23 .form textarea,
+.adminV23 .form select,
+.adminV23 .inventoryAdminToolbar input,
+.adminV23 .inventoryAdminToolbar select,
+.adminV23 .v24LeadControls input,
+.adminV23 .v24LeadControls select{
+  border:1px solid #62758a;
+  border-radius:9px;
+  min-height:44px;
+  box-shadow:inset 0 1px 0 #ffffff14;
+}
+.adminV23 .form textarea{min-height:120px;resize:vertical}
+.adminV23 .table{
+  display:grid;
+  gap:12px;
+  margin-top:18px;
+}
+.adminV23 .table .row{
+  border:1px solid #33485e;
+  border-radius:15px;
+  background:linear-gradient(145deg,#18283c,#132136);
+  box-shadow:0 9px 24px #0002;
+  transition:border-color .18s ease,transform .18s ease;
+}
+.adminV23 .table .row:hover{
+  border-color:#5a728c;
+  transform:translateY(-1px);
+}
+.adminV23 .managerItem{
+  border-radius:15px;
+  border:1px solid #33485e;
+  background:linear-gradient(145deg,#17273b,#122033);
+  box-shadow:0 9px 22px #0002;
+}
+.adminV23 .managerItem:hover{border-color:#596f88}
+.adminV23 .managerActions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.adminV23 .managerActions button,
+.adminV23 .rowActions button{
+  min-height:40px;
+  border-radius:8px;
+}
+.adminV23 .inventoryAdminToolbar{
+  padding:18px;
+  border-radius:15px;
+  background:linear-gradient(145deg,#18283d,#142235);
+  border-color:#344a61;
+  box-shadow:0 10px 24px #0002;
+}
+.adminV23 .bulkBar{
+  border:1px solid #465d74;
+  background:#1d3047;
+  border-radius:12px;
+}
+.adminV23 .v24LeadControls{
+  background:linear-gradient(145deg,#1a2b40,#142338);
+  border-color:#39516a;
+  box-shadow:0 10px 26px #0002;
+}
+.adminV23 .v24LeadCard{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(150deg,#1a2a3f,#142236);
+  box-shadow:0 14px 32px #0002;
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.adminV23 .v24LeadCard::before{
+  content:"";
+  position:absolute;
+  inset:0 auto 0 0;
+  width:3px;
+  background:linear-gradient(#e43b4b,#75233d);
+}
+.adminV23 .v24LeadCard:hover{
+  transform:translateY(-2px);
+  border-color:#607994;
+  box-shadow:0 18px 38px #0003;
+}
+.adminV23 .v24CardTop strong{font-size:20px;letter-spacing:-.015em}
+.adminV23 .v24CardTop small{line-height:1.5}
+.adminV23 .v24RequestDetails span{
+  background:#22364f;
+  border-color:#425f7e;
+  border-radius:999px;
+  padding:7px 11px;
+}
+.adminV23 .leadStatus{
+  padding:6px 10px;
+  border:1px solid #ffffff18;
+  box-shadow:inset 0 1px 0 #ffffff14;
+}
+.adminV23 .notice{
+  border-radius:12px;
+  border:1px solid #48617b;
+  box-shadow:0 10px 25px #0002;
+}
+.adminV23 .auditList{gap:12px}
+.adminV23 .auditItem{
+  border-color:#34495f;
+  border-radius:13px;
+  background:linear-gradient(145deg,#162538,#111e2d);
+  box-shadow:0 8px 22px #0002;
+}
+.adminV23 .auditItem:hover{border-color:#586f87}
+.adminV23 .statCard,
+.adminV23 .dashPanel{
+  border-radius:15px;
+  border:1px solid #344a61;
+  background:linear-gradient(150deg,#18283c,#132136);
+  box-shadow:0 10px 26px #0002;
+}
+.adminV23 .dashPanel h2{letter-spacing:-.02em}
+.adminV23 .secondary{
+  border-radius:9px;
+  border-color:#566b80;
+}
+.adminV23 button:not(.secondary):not(.danger){
+  transition:transform .15s ease,filter .15s ease,background .15s ease,border-color .15s ease;
+}
+.adminV23 button:not(:disabled):hover{filter:brightness(1.04)}
+.loginShell{
+  width:min(1120px,calc(100% - 32px));
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:0 30px 70px #0006;
+}
+.loginBrand,.loginCard{min-width:0}
+.loginCard{border-radius:18px}
+.loginBrandCopy h1{letter-spacing:-.035em}
+.loginButton{min-height:48px;border-radius:9px}
+@media(max-width:780px){
+  .adminV23 .sectionHeading,
+  .adminV23 .titleRow{align-items:stretch}
+  .adminV23 .table .row{padding:15px}
+  .adminV23 .v24LeadCard{padding:18px}
+  .adminV23 .managerActions{width:100%}
+  .adminV23 .managerActions button{flex:1}
+}
+@media(max-width:600px){
+  .adminV23 .sectionHeading h1,
+  .adminV23 .titleRow h1{font-size:32px}
+  .adminV23 .inventoryAdminToolbar{padding:14px}
+  .adminV23 .v24CardTop{flex-direction:column}
+  .loginShell{width:min(100% - 20px,1120px)}
+}
