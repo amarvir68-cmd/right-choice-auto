@@ -16,8 +16,8 @@ jobs:
           node-version: 22
       - name: Install Playwright
         run: |
-          mkdir -p .live-check
-          cd .live-check
+          mkdir -p live-check
+          cd live-check
           npm init -y
           npm install playwright@1.55.0 --no-audit --no-fund
           npx playwright install --with-deps chromium
