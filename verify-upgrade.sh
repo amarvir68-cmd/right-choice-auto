@@ -22,7 +22,7 @@ for(const [name,condition] of Object.entries({
  'gallery restores focus':gallery.includes('triggerRef.current?.focus()'),
  'inventory min price':inventory.includes('setMinPrice'),
  'inventory drivetrain':inventory.includes('setDrivetrain'),
- 'analytics fallback':read('public-site/app/AnalyticsTracker.js').includes('NEXT_PUBLIC_SUPABASE_ANON_KEY')
+ 'analytics protected endpoint':read('public-site/app/AnalyticsTracker.js').includes('/api/analytics')
 })){assert(condition,name);console.log('PASS:',name)}
 NODE
 printf '\nStatic source checks passed. Full Next builds and live workflows must still be run with dependencies/configuration.\n'

@@ -158,3 +158,6 @@ html,body{max-width:100%;overflow-x:clip}.detail{width:100%;max-width:1500px;mar
  .homeFeaturedCards.featuredCount1 .simpleInventoryBody h3{font-size:25px}
  .homeFeaturedCards.featuredCount1 .simpleInventoryPrice{font-size:28px}
 }
+
+/* v27 privacy/readability */
+.privacyPage h2{margin-top:34px;font-size:clamp(1.25rem,3vw,1.65rem)}.privacyNote{margin-top:34px;padding:16px 18px;border-left:4px solid var(--red);background:#12171c}

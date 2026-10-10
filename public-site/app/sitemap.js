@@ -8,7 +8,8 @@ export default async function sitemap(){
   {url:absoluteUrl('/cars'),lastModified:now,changeFrequency:'daily',priority:.9},
   {url:absoluteUrl('/repairs'),lastModified:now,changeFrequency:'monthly',priority:.8},
   {url:absoluteUrl('/about'),lastModified:now,changeFrequency:'monthly',priority:.5},
-  {url:absoluteUrl('/contact'),lastModified:now,changeFrequency:'monthly',priority:.6}
+  {url:absoluteUrl('/contact'),lastModified:now,changeFrequency:'monthly',priority:.6},
+  {url:absoluteUrl('/privacy'),lastModified:now,changeFrequency:'yearly',priority:.3}
  ];
  const supabase=getSupabase();
  if(!supabase)return staticPages;
