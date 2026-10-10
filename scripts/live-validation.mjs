@@ -56,20 +56,33 @@ async function httpCheck(){
     try{const r=await fn();record(name,r.status===expected,`expected ${expected}, got ${r.status}`)}
     catch(e){record(name,false,e.message)}
   }
+  try{
+    const r=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json'},body:'{not-json}'});
+    record('Rate limit enforced',r.status===429,`expected 429 after 5 prior requests, got ${r.status}`);
+  }catch(e){record('Rate limit enforced',false,e.message)}
 }
 
 async function browserCheck(){
   const pwPath=path.join(ROOT,'live-check','node_modules','playwright','index.mjs');
   const {chromium}=await import(pathToFileURL(pwPath).href);
   const browser=await chromium.launch({headless:true});
+  const discovery=await browser.newContext({viewport:{width:1366,height:768}});
+  const discoveryPage=await discovery.newPage();
+  await discoveryPage.goto(PUBLIC+'/cars',{waitUntil:'networkidle',timeout:45000});
+  const detailHref=await discoveryPage.locator('.simpleInventoryPhoto').first().getAttribute('href').catch(()=>null);
+  await discovery.close();
+  record('Vehicle detail route discovered',Boolean(detailHref),detailHref||'no listed vehicle link found');
+
   const viewports=[
+    ['mobile360',{width:360,height:800}],
     ['mobile390',{width:390,height:844}],
     ['tablet768',{width:768,height:1024}],
-    ['desktop1440',{width:1440,height:900}]
+    ['desktop1366',{width:1366,height:768}],
+    ['desktop1920',{width:1920,height:1080}]
   ];
   const pages=[
-    ['home','/'],['cars','/cars'],['repairs','/repairs'],['about','/about'],['contact','/contact'],['privacy','/privacy']
-  ];
+    ['home','/'],['cars','/cars'],['vehicle-detail',detailHref],['repairs','/repairs'],['about','/about'],['contact','/contact'],['privacy','/privacy']
+  ].filter(([,p])=>p);
 
   for(const [vpName,viewport] of viewports){
     const context=await browser.newContext({viewport});
@@ -91,10 +104,10 @@ async function browserCheck(){
         record(`${vpName} ${name} layout`,Boolean(res?.ok())&&metrics.header&&metrics.main&&metrics.footer&&overflow<=2,
           `status=${res?.status()} overflow=${overflow}px jsErrors=${errors.length}`);
         if(errors.length) record(`${vpName} ${name} JS console`,false,errors.slice(0,3).join(' | '));
-        if(vpName==='mobile390' || vpName==='desktop1440'){
+        if(vpName==='mobile390' || vpName==='desktop1366'){
           await page.screenshot({path:path.join(OUT,`${name}-${vpName}.png`),fullPage:true});
         }
-        if(name==='cars' && vpName==='desktop1440'){
+        if(name==='cars' && vpName==='desktop1366'){
           const card=page.locator('.inventoryBrowser .simpleInventoryCard').first();
           if(await card.count()){
             const box=await card.boundingBox();
@@ -120,17 +133,52 @@ async function browserCheck(){
     await context.close();
   }
 
-  const context=await browser.newContext({viewport:{width:1440,height:900}});
+  const context=await browser.newContext({viewport:{width:1366,height:768}});
   const page=await context.newPage();
   const errs=[];page.on('pageerror',e=>errs.push(e.message));
+  let captured=null;
+  page.on('request',req=>{
+    if(captured)return;
+    if(req.url().includes('.supabase.co/auth/v1/token')){
+      const h=req.headers();
+      if(h.apikey)captured={origin:new URL(req.url()).origin,key:h.apikey};
+    }
+  });
   try{
     const r=await page.goto(ADMIN,{waitUntil:'networkidle',timeout:45000});
     const text=await page.locator('body').innerText();
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
     record('Admin login loads',Boolean(r?.ok())&&/Welcome back|PRIVATE STAFF PORTAL|Sign in/i.test(text),`status=${r?.status()} overflow=${overflow}px`);
+    record('Admin unauthenticated gate',/Welcome back|Sign in/i.test(text)&&!/Available vehicles|Action centre/i.test(text),'login shown; dashboard data hidden');
     record('Admin login no horizontal overflow',overflow<=2,`${overflow}px`);
     record('Admin login no page errors',errs.length===0,errs.slice(0,3).join(' | '));
-    await page.screenshot({path:path.join(OUT,'admin-login-desktop1440.png'),fullPage:true});
+    await page.screenshot({path:path.join(OUT,'admin-login-desktop1366.png'),fullPage:true});
+
+    const email=page.locator('input[type=email]');
+    const password=page.locator('input[type=password]');
+    if(await email.count()&&await password.count()){
+      await email.fill('rca-security-check@example.invalid');
+      await password.fill('NotARealPassword-2026!');
+      await page.getByRole('button',{name:/sign in to manager/i}).click();
+      await page.waitForTimeout(1500);
+    }
+    record('Supabase anonymous credential captured for RLS test',Boolean(captured),'publishable credential observed from login request; value not logged');
+    if(captured){
+      const headers={'apikey':captured.key,'content-type':'application/json'};
+      if(captured.key.startsWith('eyJ'))headers.authorization='Bearer '+captured.key;
+      const checks=[
+        ['Anon cannot read vehicle inquiries',captured.origin+'/rest/v1/vehicle_inquiries?select=id&limit=1','GET',null],
+        ['Anon cannot write vehicle inquiries',captured.origin+'/rest/v1/vehicle_inquiries','POST','{}'],
+        ['Anon cannot write repair requests',captured.origin+'/rest/v1/repair_requests','POST','{}'],
+        ['Anon cannot write analytics events',captured.origin+'/rest/v1/analytics_events','POST','{}']
+      ];
+      for(const [name,url,method,body] of checks){
+        try{
+          const rr=await fetch(url,{method,headers,body:body??undefined});
+          record(name,[401,403].includes(rr.status),`status=${rr.status}`);
+        }catch(e){record(name,false,e.message)}
+      }
+    }
   }catch(e){record('Admin login loads',false,e.message)}
   await context.close();
   await browser.close();
