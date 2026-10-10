@@ -59,7 +59,7 @@ async function httpCheck(){
 }
 
 async function browserCheck(){
-  const pwPath=path.join(ROOT,'.live-check','node_modules','playwright','index.mjs');
+  const pwPath=path.join(ROOT,'live-check','node_modules','playwright','index.mjs');
   const {chromium}=await import(pathToFileURL(pwPath).href);
   const browser=await chromium.launch({headless:true});
   const viewports=[
