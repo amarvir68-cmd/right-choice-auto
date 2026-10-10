@@ -196,3 +196,220 @@ html,body{max-width:100%;overflow-x:clip}.detail{width:100%;max-width:1500px;mar
     aspect-ratio:4/3;
   }
 }
+
+
+/* v29: premium page polish for About, Contact and Privacy. */
+.aboutHero,.contactHero{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+}
+.aboutHero::after,.contactHero::after{
+  content:"";
+  position:absolute;
+  inset:auto -8vw -40% auto;
+  width:min(46vw,640px);
+  aspect-ratio:1;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(227,6,19,.18),transparent 68%);
+  z-index:-1;
+}
+.aboutHero>div,.contactHero>div{max-width:940px}
+.aboutHero h1,.contactHero h1{max-width:900px}
+.aboutStory{
+  display:grid;
+  grid-template-columns:minmax(0,1.35fr) minmax(290px,.65fr);
+  gap:clamp(28px,5vw,72px);
+  align-items:start;
+}
+.aboutStoryCopy{max-width:760px}
+.aboutStoryCopy>p:not(.eyebrow){color:#c5cdd4;font-size:17px;line-height:1.8}
+.aboutPromise{
+  position:relative;
+  overflow:hidden;
+  padding:30px;
+  border:1px solid #35404a;
+  border-radius:18px;
+  background:linear-gradient(155deg,#171e25,#0d1217);
+  box-shadow:0 18px 44px #0004;
+}
+.aboutPromiseMark{
+  display:grid;
+  place-items:center;
+  width:54px;height:54px;
+  border-radius:15px;
+  background:var(--red);
+  color:white;
+  font-weight:1000;
+  margin-bottom:22px;
+}
+.aboutPromise h3{font-size:24px;margin:0 0 18px}
+.aboutPromise ul{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.aboutPromise li{position:relative;padding-left:28px;color:#d5dce2;line-height:1.5}
+.aboutPromise li::before{content:"✓";position:absolute;left:0;color:#52d19b;font-weight:900}
+.aboutValueGrid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:18px;
+}
+.aboutValueGrid article{
+  padding:28px;
+  border:1px solid #303942;
+  border-radius:16px;
+  background:linear-gradient(145deg,#141a20,#0d1115);
+  min-height:220px;
+}
+.aboutValueGrid article>span{color:#ff6470;font-size:12px;font-weight:900;letter-spacing:.14em}
+.aboutValueGrid h3{font-size:24px;margin:24px 0 10px}
+.aboutValueGrid p{color:var(--muted);line-height:1.7;margin:0}
+.aboutCta{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:30px;
+  background:linear-gradient(115deg,#f4f5f6,#fff);
+  color:#111417;
+}
+.aboutCta h2{margin-bottom:12px}
+.aboutCta p:not(.eyebrow){color:#5f6871;margin:0}
+.aboutCtaActions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+.aboutCta .btn.outline{border-color:#4d5964;color:#111417}
+.contactShowcase{
+  display:grid;
+  grid-template-columns:minmax(300px,.78fr) minmax(0,1.22fr);
+  gap:24px;
+  align-items:stretch;
+}
+.contactPrimary{
+  padding:clamp(28px,4vw,48px);
+  border-radius:20px;
+  background:linear-gradient(145deg,#151c23,#0c1015);
+  border:1px solid #333e49;
+  box-shadow:0 18px 42px #0003;
+}
+.contactPrimary h2{margin-bottom:14px}
+.contactPrimary>p:not(.eyebrow){color:#b7c0c8;line-height:1.7}
+.contactPhone{
+  display:block;
+  font-size:clamp(34px,4vw,54px);
+  line-height:1;
+  font-weight:1000;
+  letter-spacing:-.045em;
+  margin:30px 0 26px;
+}
+.contactPrimaryActions{display:flex;gap:10px;flex-wrap:wrap}
+.contactInfoGrid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+}
+.contactInfoGrid article{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:11px;
+  min-width:0;
+  padding:26px;
+  border-radius:17px;
+  border:1px solid #313b45;
+  background:#12181e;
+}
+.contactInfoGrid .contactIcon{
+  display:grid;
+  place-items:center;
+  width:42px;height:42px;
+  border-radius:12px;
+  background:#2a1619;
+  color:#ff5761;
+  font-size:19px;
+}
+.contactInfoGrid small{color:#ff6d75;font-weight:900;letter-spacing:.12em}
+.contactInfoGrid strong{font-size:18px;line-height:1.45;overflow-wrap:anywhere}
+.contactInfoGrid p{margin:auto 0 0;color:#9ea8b0;line-height:1.6;font-size:14px}
+.visitPanel{
+  display:grid;
+  grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);
+  gap:34px;
+  align-items:center;
+}
+.visitPanel>div>p:not(.eyebrow){max-width:720px;color:var(--muted);line-height:1.75}
+.visitMapCard{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  min-height:230px;
+  justify-content:flex-end;
+  padding:28px;
+  border-radius:18px;
+  border:1px solid #3a4651;
+  background:
+    linear-gradient(180deg,transparent,#0b0f13 78%),
+    radial-gradient(circle at 70% 20%,#23303b,#11161b 62%);
+  box-shadow:0 16px 38px #0004;
+  transition:transform .18s ease,border-color .18s ease;
+}
+.visitMapCard:hover{transform:translateY(-3px);border-color:#e04a55}
+.visitMapCard span{font-size:11px;font-weight:900;letter-spacing:.13em;color:#ff6f78}
+.visitMapCard strong{font-size:20px;line-height:1.4}
+.visitMapCard b{color:#fff}
+.privacyV29{width:min(100% - 40px,1020px);margin:60px auto 90px}
+.privacyIntro{max-width:760px;margin-bottom:30px}
+.privacyLead{font-size:18px!important;color:#cdd5db!important;line-height:1.7!important}
+.privacySummary{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+  margin:30px 0 42px;
+}
+.privacySummary article{
+  padding:22px;
+  border-radius:14px;
+  border:1px solid #303a43;
+  background:#12181e;
+}
+.privacySummary span{display:block;color:#ff6871;font-size:11px;font-weight:900;letter-spacing:.13em;margin-bottom:18px}
+.privacySummary strong{display:block;font-size:17px;margin-bottom:8px}
+.privacySummary p{font-size:14px!important;line-height:1.6!important;margin:0!important;color:#aeb7bf!important}
+.privacyContent{display:grid;gap:14px}
+.privacyContent article{
+  padding:26px 28px;
+  border-left:3px solid #353f49;
+  background:#10151a;
+  border-radius:0 12px 12px 0;
+}
+.privacyContent article:hover{border-left-color:var(--red)}
+.privacyContent h2{margin:0 0 10px}
+.privacyContent p{margin:0!important}
+.privacyContact{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:24px;
+  margin-top:36px;
+  padding:28px;
+  border-radius:16px;
+  border:1px solid #35404a;
+  background:linear-gradient(125deg,#151c23,#11161b);
+}
+.privacyContact h2{margin:5px 0 8px}
+.privacyContact p{margin:0!important}
+.privacyContact .btn{flex:0 0 auto}
+
+@media(max-width:980px){
+  .aboutStory,.contactShowcase,.visitPanel{grid-template-columns:1fr}
+  .contactInfoGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .aboutValueGrid,.privacySummary,.contactInfoGrid{grid-template-columns:1fr}
+  .aboutCta,.privacyContact{align-items:stretch;flex-direction:column}
+  .aboutCtaActions{justify-content:flex-start}
+  .contactPrimaryActions{flex-direction:column}
+  .contactPrimaryActions .btn{width:100%;text-align:center}
+}
+@media(max-width:620px){
+  .aboutStory,.contactShowcase,.visitPanel{gap:18px}
+  .aboutPromise,.contactPrimary,.contactInfoGrid article,.privacyContent article{padding:21px}
+  .contactPhone{font-size:35px}
+  .visitMapCard{min-height:200px;padding:22px}
+  .privacyV29{width:min(100% - 28px,1020px);margin-top:38px}
+}
